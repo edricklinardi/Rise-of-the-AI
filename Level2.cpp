@@ -77,7 +77,7 @@ void Level2Scene::initialise()
         LEVEL2_DATA,
         map_texture_id,
         1.0f,
-        20, 9  // tile count x and y (adjust if your tilemap differs)
+        20, 9
     );
 
 
@@ -154,7 +154,7 @@ void Level2Scene::initialise()
 
     m_game_state.bgm = Mix_LoadMUS(BGM_FILEPATH);
     Mix_PlayMusic(m_game_state.bgm, -1);
-    Mix_VolumeMusic(MIX_MAX_VOLUME / 2);
+    Mix_VolumeMusic(25);
 
     m_game_state.jump_sfx = Mix_LoadWAV(JUMP_SFX_FILEPATH);
     m_game_state.death_sfx = Mix_LoadWAV(DEATH_SFX_FILEPATH);
@@ -188,11 +188,11 @@ void Level2Scene::update(float delta_time)
                     0.0f
                 ));
             }
-            else
+            else // Player dies when colliding with AI
             {
                 Mix_PlayChannel(-1, m_game_state.death_sfx, 0);
 
-                m_game_state.player->lose_life();
+                m_game_state.player->lose_life(); //Decreases player life
                 lives = m_game_state.player->get_lives();
 
                 if (lives <= 0)
@@ -201,7 +201,7 @@ void Level2Scene::update(float delta_time)
                     return;
                 }
 
-                // Store remaining lives, re-init level, and restore lives
+                // Restarts level when player dies
                 initialise();
                 m_game_state.player->set_lives(lives);
             }

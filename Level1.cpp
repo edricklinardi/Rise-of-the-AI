@@ -10,7 +10,6 @@
 
 #include "Level1.h"
 #include "Utility.h"
-#include <Windows.h>
 
 #define LEVEL1_WIDTH 20
 #define LEVEL1_HEIGHT 8
@@ -66,7 +65,7 @@ void Level1Scene::initialise()
         LEVEL1_DATA,
         map_texture_id,
         1.0f,
-        20, 9  // tile count x and y (adjust if your tilemap differs)
+        20, 9
     );
 
 
@@ -127,7 +126,7 @@ void Level1Scene::initialise()
 
     m_game_state.bgm = Mix_LoadMUS(BGM_FILEPATH);
     Mix_PlayMusic(m_game_state.bgm, -1);
-    Mix_VolumeMusic(MIX_MAX_VOLUME / 2);
+    Mix_VolumeMusic(25);
 
     m_game_state.jump_sfx = Mix_LoadWAV(JUMP_SFX_FILEPATH);
     m_game_state.death_sfx = Mix_LoadWAV(DEATH_SFX_FILEPATH);
@@ -143,14 +142,6 @@ void Level1Scene::update(float delta_time)
     for (int i = 0; i < ENEMY_COUNT; i++)
     {
         m_game_state.enemies[i].update(delta_time, m_game_state.player, NULL, NULL, m_game_state.map);
-
-        char buffer[128];
-        sprintf_s(buffer, "Enemy %d Pos: %.2f, %.2f | Active: %d\n",
-            i,
-            m_game_state.enemies[i].get_position().x,
-            m_game_state.enemies[i].get_position().y,
-            m_game_state.enemies[i].is_active());
-        OutputDebugStringA(buffer);
     }
 
     for (int i = 0; i < ENEMY_COUNT; i++)
@@ -169,11 +160,11 @@ void Level1Scene::update(float delta_time)
                     0.0f
                 ));
             }
-            else
+            else // Player dies when colliding with AI
             {
                 Mix_PlayChannel(-1, m_game_state.death_sfx, 0);
 
-                m_game_state.player->lose_life();
+                m_game_state.player->lose_life(); //Decreases player life
                 lives = m_game_state.player->get_lives();
 
                 if (lives <= 0)
@@ -182,7 +173,7 @@ void Level1Scene::update(float delta_time)
                     return;
                 }
 
-                // Store remaining lives, re-init level, and restore lives
+                // Restarts level when player dies
                 initialise();
                 m_game_state.player->set_lives(lives);
             }

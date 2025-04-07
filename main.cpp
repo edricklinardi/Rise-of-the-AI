@@ -97,11 +97,11 @@ void render_hearts(ShaderProgram* program, GLuint texture_id, int life_count) {
     // Render hearts from right to left
     for (int i = 0; i < life_count; ++i) {
         glm::mat4 model_matrix = glm::mat4(1.0f);
-        float x = 4.3f - i * 0.7f;  // adjust spacing
+        float x = 4.3f - i * 0.7f;  
         float y = 3.2f;
 
         model_matrix = glm::translate(model_matrix, glm::vec3(x, y, 0.0f));
-        model_matrix = glm::scale(model_matrix, glm::vec3(0.6f, 0.6f, 1.0f)); // adjust size
+        model_matrix = glm::scale(model_matrix, glm::vec3(0.6f, 0.6f, 1.0f));
 
         program->set_model_matrix(model_matrix);
 
@@ -128,7 +128,7 @@ void render_hearts(ShaderProgram* program, GLuint texture_id, int life_count) {
         glDisableVertexAttribArray(program->get_tex_coordinate_attribute());
     }
 
-    // Restore the game view matrix after drawing UI
+    // Restore the game view matrix after drawing heart UI
     program->set_view_matrix(g_view_matrix);
 }
 
@@ -224,18 +224,17 @@ void process_input()
             case SDLK_q:
 				g_app_status = TERMINATED;
                 break;
-            case SDLK_RETURN:
+            case SDLK_RETURN: // Start game
 				if (g_current_scene == g_menu)
 				{
-					switch_to_scene(g_level3);
+					switch_to_scene(g_level1);
 				}
                 break;
-			case SDLK_r:
+			case SDLK_r: // Restart game
                 lives = 3;
 				switch_to_scene(g_menu);
 				break;
-            case SDLK_SPACE:
-                // Jump
+            case SDLK_SPACE: // Jump
                 if (g_current_scene != g_menu) 
                 {
                     if (g_current_scene->get_state().player->get_collided_bottom())
@@ -244,7 +243,6 @@ void process_input()
                         Mix_PlayChannel(-1, g_current_scene->get_state().jump_sfx, 0);
                     }
                 }
-
                 break;
             default: break;
             }
@@ -254,7 +252,7 @@ void process_input()
         }
     }
 
-    if (g_current_scene->get_state().player != nullptr)
+	if (g_current_scene->get_state().player != nullptr) // Only accept input if player exists
     {
         const Uint8* key_state = SDL_GetKeyboardState(NULL);
 
@@ -319,7 +317,7 @@ void update()
         }
 	}
 
-    if (g_current_scene->get_state().next_scene_id != -1) {
+    if (g_current_scene->get_state().next_scene_id != -1) { //Scene switching
         switch (g_current_scene->get_state().next_scene_id) {
         case 1:
             switch_to_scene(g_level1);
@@ -347,7 +345,7 @@ void render()
 
     g_current_scene->render(&g_shader_program);
 
-    if (g_current_scene->get_state().player != nullptr && g_current_scene != g_win_scene && g_current_scene != g_lose_scene) {
+    if (g_current_scene->get_state().player != nullptr && g_current_scene != g_win_scene && g_current_scene != g_lose_scene) { // Render hearts
         int current_lives = g_current_scene->get_state().player->get_lives();
         render_hearts(&g_shader_program, heart_texture_id, current_lives);
     }
